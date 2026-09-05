@@ -14,9 +14,33 @@
     body { background-color: var(--bg); color: var(--text); display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 100vh; height: 100dvh; padding: 10px; overflow: hidden; }
 
     /* Écran d'accueil */
-    #welcome-screen { position: absolute; inset: 0; background: var(--bg); z-index: 20; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; text-align: center; }
-    #welcome-screen.hidden { opacity: 0; visibility: hidden; pointer-events: none; transition: 0.4s; }
-    .welcome-card { background: var(--card-bg); border: 1px solid var(--border-empty); border-radius: 16px; padding: 30px; max-width: 380px; }
+    #welcome-screen { 
+      position: absolute; 
+      inset: 0; 
+      background: var(--bg); 
+      z-index: 9999; 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      justify-content: center; 
+      padding: 24px; 
+      text-align: center; 
+    }
+    #welcome-screen.hidden { 
+      opacity: 0; 
+      visibility: hidden; 
+      pointer-events: none; 
+      transition: 0.4s; 
+    }
+    .welcome-card { 
+      background: var(--card-bg); 
+      border: 1px solid var(--border-empty); 
+      border-radius: 16px; 
+      padding: 30px; 
+      max-width: 380px; 
+      position: relative;
+      z-index: 10000;
+    }
     .rules-list { text-align: left; margin: 24px 0; display: flex; flex-direction: column; gap: 12px; font-size: 0.9rem; }
     .rule-badge { padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 0.8rem; }
     .rules-italic { font-style: italic; color: #aaa; margin-top: 10px; font-size: 0.85rem; }
@@ -106,8 +130,8 @@
       board.appendChild(row);
     }
 
-    function startGame() { 
-      document.getElementById("welcome-screen").classList.add("hidden"); 
+    function startGame() {
+      document.getElementById("welcome-screen").classList.add("hidden");
     }
 
     function handleKey(key) {
@@ -139,7 +163,6 @@
               if (i === 6) {
                 if (currentGuess === TARGET_WORD) {
                   isGameOver = true;
-                  // ✅ Corrigé ici avec des backticks `...`
                   document.getElementById("modal-msg").innerText = `J'avoue que malgré tout j'ai passé un bête de moment avec toi et c'était bien drôle même si tu fais tarpin l'ancienne à dire à tout le monde "JJJJJJJAAAAAAAAAAAAAMMMMMMMMMMAIS DE LA VIE" ksos va\nça sera marrant si je te revois`;
                   document.getElementById("modal").style.display = "flex";
                 } else if (currentRow < 5) { 
@@ -147,7 +170,6 @@
                   currentTile = 0; 
                   currentGuess = ""; 
                 } else { 
-                  // ✅ Corrigé ici avec la parenthèse fermante
                   alert("Perdu ! C'était pas ça tdc"); 
                   isGameOver = true; 
                 }
