@@ -48,16 +48,16 @@
 
     /* Jeu */
     header { text-align: center; padding-bottom: 8px; border-bottom: 1px solid var(--border-empty); width: 100%; max-width: 480px; }
-    #board-container { display: flex; justify-content: center; align-items: center; flex-grow: 1; width: 100%; }
+    #board-container { display: flex; justify-content: center; align-items: center; flex-grow: 1; width: 100%; perspective: 1000px; }
     #board { display: grid; grid-template-rows: repeat(6, 1fr); gap: 5px; width: 100%; max-width: 380px; }
     .row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
-    .tile { aspect-ratio: 1; border: 2px solid var(--border-empty); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; font-weight: bold; text-transform: uppercase; transition: transform 0.25s; }
-    .tile.active { border-color: var(--border-active); animation: pop 0.1s ease-in-out; }
+    .tile { aspect-ratio: 1; border: 2px solid var(--border-empty); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; font-weight: bold; text-transform: uppercase; transition: border-color 0.1s; }
+    .tile.active { border-color: var(--border-active); animation: pop 0.15s ease-in-out; }
     
     /* Clavier */
     #keyboard { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 6px; }
     .keyboard-row { display: flex; justify-content: center; gap: 4px; touch-action: manipulation; }
-    .key { background-color: var(--key-bg); color: var(--text); border: none; border-radius: 4px; height: 48px; flex: 1; cursor: pointer; text-transform: uppercase; font-weight: bold; font-size: 0.85rem; }
+    .key { background-color: var(--key-bg); color: var(--text); border: none; border-radius: 4px; height: 48px; flex: 1; cursor: pointer; text-transform: uppercase; font-weight: bold; font-size: 0.85rem; transition: background-color 0.2s; }
     .key.large { flex: 1.5; font-size: 0.75rem; }
 
     /* Modal */
@@ -71,9 +71,27 @@
     .correct { background-color: var(--green) !important; border-color: var(--green) !important; }
     .present { background-color: var(--yellow) !important; border-color: var(--yellow) !important; }
     .absent { background-color: var(--gray) !important; border-color: var(--gray) !important; }
-    @keyframes pop { 50% { transform: scale(1.1); } }
-    .flip { animation: flip-tile 0.5s ease forwards; }
-    @keyframes flip-tile { 0% { transform: rotateX(0); } 50% { transform: rotateX(90deg); } 100% { transform: rotateX(0); } }
+
+    @keyframes pop { 
+      0% { transform: scale(0.8); opacity: 0; }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* Animation de retournement 3D fluide */
+    .tile.flip {
+      animation: flipTile 0.6s ease forwards;
+    }
+
+    @keyframes flipTile {
+      0% { transform: rotateX(0deg); }
+      50% { 
+        transform: rotateX(90deg); 
+        background-color: var(--bg); 
+        border-color: var(--border-empty); 
+      }
+      100% { transform: rotateX(0deg); }
+    }
   </style>
 </head>
 <body>
@@ -159,22 +177,30 @@
           
           for (let i = 0; i < 7; i++) {
             setTimeout(() => {
-              rowTiles[i].classList.add("flip", status[i]);
+              const tile = rowTiles[i];
+              tile.classList.add("flip");
+              // On applique la couleur au milieu du retournement (à 300ms sur les 600ms de l'animation)
+              setTimeout(() => {
+                tile.classList.add(status[i]);
+              }, 300);
+
               if (i === 6) {
-                if (currentGuess === TARGET_WORD) {
-                  isGameOver = true;
-                  document.getElementById("modal-msg").innerText = `J'avoue que malgré tout j'ai passé un bête de moment avec toi et c'était bien drôle même si tu fais tarpin l'ancienne à dire à tout le monde "JJJJJJJAAAAAAAAAAAAAMMMMMMMMMMAIS DE LA VIE" ksos va\nça sera marrant si je te revois`;
-                  document.getElementById("modal").style.display = "flex";
-                } else if (currentRow < 5) { 
-                  currentRow++; 
-                  currentTile = 0; 
-                  currentGuess = ""; 
-                } else { 
-                  alert("Perdu ! C'était pas ça tdc"); 
-                  isGameOver = true; 
-                }
+                setTimeout(() => {
+                  if (currentGuess === TARGET_WORD) {
+                    isGameOver = true;
+                    document.getElementById("modal-msg").innerText = `J'avoue que malgré tout j'ai passé un bête de moment avec toi et c'était bien drôle même si tu fais tarpin l'ancienne à dire à tout le monde "JJJJJJJAAAAAAAAAAAAAMMMMMMMMMMAIS DE LA VIE" ksos va\nça sera marrant si je te revois`;
+                    document.getElementById("modal").style.display = "flex";
+                  } else if (currentRow < 5) { 
+                    currentRow++; 
+                    currentTile = 0; 
+                    currentGuess = ""; 
+                  } else { 
+                    alert("Perdu ! C'était pas ça tdc"); 
+                    isGameOver = true; 
+                  }
+                }, 400);
               }
-            }, i * 200);
+            }, i * 250);
           }
         }
       } else if (key === "BACKSPACE") {
